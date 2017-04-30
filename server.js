@@ -10,7 +10,7 @@ var Article = require("./models/articleSchema");
 // Create a new express app
 var app = express();
 // Sets an initial port. We'll use this later in our listener
-var PORT = process.env.PORT || 3000;
+var PORT = process.env.PORT || 3333;
 
 // Run Morgan for Logging
 app.use(logger("dev"));
@@ -22,17 +22,17 @@ app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 app.use(express.static("./public"));
 
 // -------------------------------------------------
+// If deployed, use the deployed database. Otherwise use the local mongoHeadlines database
+var db = process.env.MONGODB_URI || "mongodb://localhost/nytimes";
 
-// MongoDB configuration (Change this URL to your own DB)
-mongoose.connect("mongodb://localhost/nytimes");
-var db = mongoose.connection;
-
-db.on("error", function(err) {
-    console.log("Mongoose Error: ", err);
-});
-
-db.once("open", function() {
-    console.log("mongoose.connect('mongodb://localhost/clicks1stactivity');");
+// Connect
+mongoose.connect(db, function(error) {
+  if (error) {
+    console.log(error);
+  }
+  else {
+    console.log("Ready to serve! ");
+  }
 });
 
 // -------------------------------------------------
